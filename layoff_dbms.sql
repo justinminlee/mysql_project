@@ -173,18 +173,42 @@ MODIFY COLUMN `date` DATE;
 
 -- 3. NULL Values and Blank Values
 
-SELECT * 
-FROM layoffs_staging2
-WHERE total_laid_off IS NULL;
-
+-- I found there are bunch of blanks or null values in industry column 
 SELECT *
 FROM layoffs_staging2
 WHERE industry IS NULL
 OR industry = '';
 
-SELECT *
+SELECT * 
 FROM layoffs_staging2
 WHERE company = 'Airbnb';
 
+-- I am assuming that if there are rows having the same company are having the same industry 
+SELECT t1.industry, t2.industry
+FROM layoffs_staging2 t1
+JOIN layoffs_staging2 t2
+	ON t1.company = t2.company
+WHERE (t1.industry IS NULL OR t1.industry = '')
+AND t2.industry IS NOT NULL;
 
+-- So I will put the same industry names in the blanks or null whatever with using join table
+UPDATE layoffs_staging2 t1
+JOIN layoffs_staging2 t2
+	ON t1.company = t2.company
+SET t1.industry = t2.industry
+WHERE (t1.industry IS NULL OR t1.industry = '')
+AND t2.industry IS NOT NULL;
 
+-- Seems it does not woking because industry column has blank value instead of null values
+-- So I will quickly update that to null value
+UPDATE layoffs_staging2
+SET industry = NULL
+WHERE industry = '';
+
+-- Now fix it and check
+UPDATE layoffs_staging2 t1
+JOIN layoffs_staging2 t2
+	ON t1.company = t2.company
+SET t1.industry = t2.industry
+WHERE t1.industry IS NULL
+AND t2.industry IS NOT NULL;
