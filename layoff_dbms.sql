@@ -27,7 +27,7 @@ SET SQL_SAFE_UPDATES = 0;
 UPDATE layoffs SET total_laid_off = NULL WHERE total_laid_off=0; 
 UPDATE layoffs SET percentage_laid_off = NULL WHERE percentage_laid_off='NULL'; 
 UPDATE layoffs SET funds_raised_millions = NULL WHERE funds_raised_millions=0; 
-
+UPDATE layoffs SET `date` = NULL WHERE `date`='NULL'; 
 
 -- 1. Remove Duplicates
 -- 2. Standarise the Data
@@ -74,7 +74,7 @@ WHERE row_num > 1;
 -- Drop table layoffs_staging2 if its already exists
 DROP TABLE IF EXISTS layoffs_staging2; 
 
--- Now we are going to create table named layoffs_staging2 which we are going to delete all the duplicate rows from 
+-- Now I am going to create table named layoffs_staging2 which we are going to delete all the duplicate rows from 
 -- layoffs_staging
 CREATE TABLE layoffs_staging2(
 	company text,
@@ -89,7 +89,7 @@ CREATE TABLE layoffs_staging2(
     row_num int
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Check if we got the same duplicates with layoffs_staging
+-- Check if I got the same duplicates with layoffs_staging
 SELECT * FROM layoffs_staging2
 WHERE row_num > 1;
 
@@ -101,12 +101,12 @@ PARTITION BY company, location, industry, total_laid_off, percentage_laid_off, '
 stage, country, funds_raised_millions) AS row_num
 FROM layoffs_staging;
 
--- Now we are going to delete all the duplicates in table layoffs_staging2
+-- Now I am going to delete all the duplicates in table layoffs_staging2
 DELETE
 FROM layoffs_staging2
 WHERE row_num > 1;
 
--- Check if we deleted all the duplicates from the table
+-- Check if I deleted all the duplicates from the table
 SELECT *
 FROM layoffs_staging2
 WHERE row_num > 1;
@@ -122,7 +122,7 @@ FROM layoffs_staging2;
 UPDATE layoffs_staging2
 SET company = TRIM(company);
 
--- We saw there are some duplicate industries which has little difference so we are going to
+-- I saw there are some duplicate industries which has little difference so we are going to
 -- change that name to the same name
 SELECT DISTINCT industry
 FROM layoffs_staging2;
@@ -136,12 +136,12 @@ UPDATE layoffs_staging2
 SET industry = 'Crypto'
 WHERE industry LIKE 'Crypto%';
 
--- We can see the problem with united states. so we are going to Trim the country name
+-- I can see the problem with united states. so we are going to Trim the country name
 SELECT DISTINCT country
 FROM layoffs_staging2
 ORDER BY 1;
 
--- We can see this code could fix our problem
+-- I can see this code could fix our problem
 SELECT DISTINCT country, TRIM(trailing '.' FROM country)
 FROM layoffs_staging2
 WHERE country LIKE 'United States%';
@@ -150,3 +150,22 @@ WHERE country LIKE 'United States%';
 UPDATE layoffs_staging2
 SET country = TRIM(trailing '.' FROM country)
 WHERE country LIKE 'United States%';
+
+-- Now I am going to change date to datetime format
+-- As we can see my date column is formatted in text format
+SELECT `date`
+FROM layoffs_staging2;
+
+-- Use str_to_date() function to change text format to datetime format
+SELECT `date`,
+STR_TO_DATE(`date`, '%m/%d/%Y')
+FROM layoffs_staging2;
+
+-- Now update it
+UPDATE layoffs_staging2
+SET `date` = STR_TO_DATE(`date`, '%m/%d/%Y');
+
+
+
+
+
