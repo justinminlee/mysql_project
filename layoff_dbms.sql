@@ -29,10 +29,11 @@ UPDATE layoffs SET percentage_laid_off = NULL WHERE percentage_laid_off='NULL';
 UPDATE layoffs SET funds_raised_millions = NULL WHERE funds_raised_millions=0; 
 UPDATE layoffs SET `date` = NULL WHERE `date`='NULL'; 
 
--- 1. Remove Duplicates
--- 2. Standarise the Data
--- 3. Null values or blank values
--- 4. Remove any Columns 
+-- My analyse process could be devided by 4 sections below
+	-- 1. Remove Duplicates
+	-- 2. Standarise the Data
+	-- 3. Null values or blank values
+	-- 4. Remove any Columns 
 
 
 -- 1. Remove Duplicates
