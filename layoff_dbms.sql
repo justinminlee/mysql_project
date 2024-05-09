@@ -203,7 +203,7 @@ AND t2.industry IS NOT NULL;
 -- So I will quickly update that to null value
 UPDATE layoffs_staging2
 SET industry = NULL
-WHERE industry = '';
+WHERE (industry = '' OR industry = 'NULL');
 
 -- Now fix it and check
 UPDATE layoffs_staging2 t1
@@ -212,3 +212,4 @@ JOIN layoffs_staging2 t2
 SET t1.industry = t2.industry
 WHERE t1.industry IS NULL
 AND t2.industry IS NOT NULL;
+
