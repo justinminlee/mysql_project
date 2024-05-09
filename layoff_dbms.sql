@@ -165,7 +165,25 @@ FROM layoffs_staging2;
 UPDATE layoffs_staging2
 SET `date` = STR_TO_DATE(`date`, '%m/%d/%Y');
 
+-- Now the date column has the datetime format so I am going to change the date's datetype to date type
+ALTER TABLE layoffs_staging2
+MODIFY COLUMN `date` DATE;
 
+
+-- 3. NULL Values and Blank Values
+
+SELECT * 
+FROM layoffs_staging2
+WHERE total_laid_off IS NULL;
+
+SELECT *
+FROM layoffs_staging2
+WHERE industry IS NULL
+OR industry = '';
+
+SELECT *
+FROM layoffs_staging2
+WHERE company = 'Airbnb';
 
 
 
