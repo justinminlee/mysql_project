@@ -34,7 +34,10 @@ UPDATE layoffs SET funds_raised_millions = NULL WHERE funds_raised_millions=0;
 -- 3. Null values or blank values
 -- 4. Remove any Columns 
 
--- Create table layoffs_staging which have the same columns with layoffs
+
+-- 1. Remove Duplicates
+
+-- Drop table layoffs_staging if its already exsits
 DROP TABLE IF EXISTS layoffs_staging;
 
 -- Create table layoffs_staging with all same columns from layoffs table
@@ -51,7 +54,8 @@ FROM layoffs;
 -- Partition those selected columns by which has the same values and make row_num columns which has the row number by asc order
 SELECT *,
 ROW_NUMBER() OVER(
-PARTITION BY company, industry, total_laid_off, percentage_laid_off, 'date') AS row_num
+PARTITION BY company, location, industry, total_laid_off, percentage_laid_off, 'date',
+stage, country, funds_raised_millions) AS row_num
 FROM layoffs_staging;
 
 -- To check the duplicates in the database by looking at the row_num column
@@ -67,12 +71,82 @@ FROM layoffs_staging
 SELECT * FROM duplicate_cte
 WHERE row_num > 1;
 
+-- Drop table layoffs_staging2 if its already exists
+DROP TABLE IF EXISTS layoffs_staging2; 
+
+-- Now we are going to create table named layoffs_staging2 which we are going to delete all the duplicate rows from 
+-- layoffs_staging
+CREATE TABLE layoffs_staging2(
+	company text,
+    location text,
+    industry text,
+    total_laid_off int DEFAULT NULL,
+    percentage_laid_off text,
+    date text,
+    stage text,
+    country text,
+    funds_raised_millions int DEFAULT NULL,
+    row_num int
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Check if we got the same duplicates with layoffs_staging
+SELECT * FROM layoffs_staging2
+WHERE row_num > 1;
+
+-- Insert all the rows from layoffs_staging to layoffs_staging2
+INSERT INTO layoffs_staging2
+SELECT *,
+ROW_NUMBER() OVER(
+PARTITION BY company, location, industry, total_laid_off, percentage_laid_off, 'date',
+stage, country, funds_raised_millions) AS row_num
+FROM layoffs_staging;
+
+-- Now we are going to delete all the duplicates in table layoffs_staging2
+DELETE
+FROM layoffs_staging2
+WHERE row_num > 1;
+
+-- Check if we deleted all the duplicates from the table
+SELECT *
+FROM layoffs_staging2
+WHERE row_num > 1;
 
 
+-- Standarising Data
 
+-- TRIM(remove takes off the white spaces) the company names
+SELECT company, TRIM(company)
+FROM layoffs_staging2;
 
+-- UPDATE company names with TRIM(company) name
+UPDATE layoffs_staging2
+SET company = TRIM(company);
 
+-- We saw there are some duplicate industries which has little difference so we are going to
+-- change that name to the same name
+SELECT DISTINCT industry
+FROM layoffs_staging2;
 
+SELECT *
+FROM layoffs_staging2
+WHERE industry LIKE 'Crypto%';
 
+-- Update all the industry which has Crypto at the start to Crypto
+UPDATE layoffs_staging2
+SET industry = 'Crypto'
+WHERE industry LIKE 'Crypto%';
 
+-- We can see the problem with united states. so we are going to Trim the country name
+SELECT DISTINCT country
+FROM layoffs_staging2
+ORDER BY 1;
 
+-- We can see this code could fix our problem
+SELECT DISTINCT country, TRIM(trailing '.' FROM country)
+FROM layoffs_staging2
+WHERE country LIKE 'United States%';
+
+-- Fix the problem
+UPDATE layoffs_staging2
+SET country = TRIM(trailing '.' FROM country)
+WHERE country LIKE 'United States%';
