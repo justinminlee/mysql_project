@@ -1,6 +1,6 @@
 -- DATABASE FROM 'https://github.com/AlexTheAnalyst/MySQL-YouTube-Series/blob/main/layoffs.csv'
 
--- Data cleaning	
+-- Data cleaning project
 USE layoff_dbms;
 
 DROP TABLE IF EXISTS layoffs;
