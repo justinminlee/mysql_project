@@ -1,4 +1,3 @@
--- DATABASE FROM 'https://github.com/AlexTheAnalyst/MySQL-YouTube-Series/blob/main/layoffs.csv'
 
 -- Data cleaning project
 USE layoff_dbms;
