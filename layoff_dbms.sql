@@ -230,8 +230,8 @@ AND percentage_laid_off IS NULL;
 
 -- 4. Remove any Column
 
--- Now we finished finalising the table so at this point we don't need row_num columns
--- Because we don't have any duplicates, so I will drop that column from the table
+-- Now I finished finalising the table so at this point I don't need row_num columns
+-- Because this table does not have any duplicates, so I will drop that column from the table
 ALTER TABLE layoffs_staging2
 DROP COLUMN row_num;
 
@@ -239,7 +239,7 @@ DROP COLUMN row_num;
 SELECT * FROM layoffs_staging2;
 
 
--- Maybe we nessecarily to put values into total_laid_off, and percentage_laid_off's Null by scrapping from 
+-- Maybe I nessecarily to put values into total_laid_off, and percentage_laid_off's Null by scrapping from 
 -- the websites or the articles but this is totally different things
 
 
