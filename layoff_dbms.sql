@@ -181,7 +181,7 @@ OR industry = '';
 
 SELECT * 
 FROM layoffs_staging2
-WHERE company = 'Airbnb';
+WHERE company LIKE 'Air%';
 
 -- I am assuming that if there are rows having the same company are having the same industry 
 SELECT t1.industry, t2.industry
@@ -212,4 +212,34 @@ JOIN layoffs_staging2 t2
 SET t1.industry = t2.industry
 WHERE t1.industry IS NULL
 AND t2.industry IS NOT NULL;
+
+
+-- See there are numerous of columns which do not have total_laid_off and percentage_laid_off values 
+-- which means it is not nessecary, so I will drop every rows which do not have both of them
+SELECT * 
+FROM layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;
+
+-- Delete rows from layoffs_staging2
+DELETE 
+FROM layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;
+
+
+-- 4. Remove any Column
+
+-- Now we finished finalising the table so at this point we don't need row_num columns
+-- Because we don't have any duplicates, so I will drop that column from the table
+ALTER TABLE layoffs_staging2
+DROP COLUMN row_num;
+
+-- Now it's done
+SELECT * FROM layoffs_staging2;
+
+
+-- Maybe we nessecarily to put values into total_laid_off, and percentage_laid_off's Null by scrapping from 
+-- the websites or the articles but this is totally different things
+
 
