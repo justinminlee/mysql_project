@@ -1,4 +1,3 @@
-
 -- Data cleaning project
 USE layoff_dbms;
 
