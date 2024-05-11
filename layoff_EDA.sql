@@ -1,4 +1,5 @@
--- Exploratory Data Analysis
+-- Exploratory Data Analysis 
+-- Using layoffs Dataset
 
 USE layoff_dbms;
 
