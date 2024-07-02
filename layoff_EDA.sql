@@ -12,3 +12,7 @@ FROM layoffs_staging2;
 SELECT *
 FROM layoffs_staging2
 WHERE percentage_laid_off = 1;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3f00615 (Finished cleaning)
